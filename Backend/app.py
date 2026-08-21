@@ -1,70 +1,47 @@
-import re
-from datetime import datetime
+from typing import Optional
 
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, field_validator
-from typing import List, Optional
-
-app = FastAPI(title="Student Profile API")
+from fastapi import FastAPI, HTTPException, Depends
+from sqlmodel import SQLModel, Field, Session, create_engine, select
 
 # ---------------------------------------------------------------------------
-# CORS
+# Database setup
 # ---------------------------------------------------------------------------
-# Update allow_origins with your actual frontend URL(s) in production.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+DATABASE_URL = "sqlite:///./students.db"
 
-EMAIL_REGEX = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+# check_same_thread=False is needed only for SQLite when used with FastAPI's
+# threaded request handling.
+engine = create_engine(DATABASE_URL, echo=False, connect_args={"check_same_thread": False})
 
 
-class Experience(BaseModel):
-    company: str
-    role: str
-    duration: str
-    description: Optional[str] = None
-
-
-class StudentProfile(BaseModel):
-    # 10 MVP fields
-    name: str
-    email: str
+class StudentProfile(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    full_name: str
+    email: str = Field(index=True, unique=True)
     phone: Optional[str] = None
-    university: str
-    major: str
-    grad_year: int
-    skills: List[str] = []
-    experience: List[Experience] = []
-    resume_url: Optional[str] = None
-    linkedin_url: Optional[str] = None
-
-    @field_validator("email")
-    @classmethod
-    def validate_email(cls, value: str) -> str:
-        if not EMAIL_REGEX.match(value):
-            raise ValueError("Invalid email format.")
-        return value.lower()
-
-    @field_validator("grad_year")
-    @classmethod
-    def validate_grad_year(cls, value: int) -> int:
-        current_year = datetime.now().year
-        earliest = 1950
-        latest = current_year + 10
-        if value < earliest or value > latest:
-            raise ValueError(
-                f"grad_year must be between {earliest} and {latest}."
-            )
-        return value
+    college_name: str
+    degree: str
+    graduation_year: int
+    bio: Optional[str] = None
 
 
-# In-memory "database": keyed by email
-students_db: dict[str, StudentProfile] = {}
+def create_db_and_tables() -> None:
+    SQLModel.metadata.create_all(engine)
+
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+
+
+# ---------------------------------------------------------------------------
+# App setup
+# ---------------------------------------------------------------------------
+app = FastAPI(title="Student Profile API (SQLModel + SQLite)")
+
+
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 
 @app.get("/")
@@ -73,19 +50,30 @@ def read_root():
 
 
 @app.post("/students/", response_model=StudentProfile)
-def create_student(student: StudentProfile):
-    if student.email in students_db:
+def create_student(student: StudentProfile, session: Session = Depends(get_session)):
+    existing = session.exec(
+        select(StudentProfile).where(StudentProfile.email == student.email)
+    ).first()
+    if existing:
         raise HTTPException(
             status_code=400,
             detail=f"Student with email '{student.email}' already exists.",
         )
-    students_db[student.email] = student
+
+    # Ensure we don't accidentally accept a client-supplied id.
+    student.id = None
+
+    session.add(student)
+    session.commit()
+    session.refresh(student)
     return student
 
 
 @app.get("/students/{email}", response_model=StudentProfile)
-def get_student(email: str):
-    student = students_db.get(email)
+def get_student(email: str, session: Session = Depends(get_session)):
+    student = session.exec(
+        select(StudentProfile).where(StudentProfile.email == email)
+    ).first()
     if student is None:
         raise HTTPException(
             status_code=404,
