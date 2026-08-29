@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Student Profile</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body {
+    background-color: #F4F6F8;
+    background-image: radial-gradient(circle at 1px 1px, rgba(27,42,65,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    font-family: 'Inter', sans-serif;
+    color: #2B2F36;
+  }
+  .font-display {
+    font-family: 'Fraunces', serif;
+  }
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6B7280;
+  }
+  input, select, textarea {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #9CA3AF;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #4338CA;
+    box-shadow: 0 0 0 3px rgba(67,56,202,0.12);
+  }
+  .btn-primary {
+    background-color: #1E1B4B;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+  .btn-primary:hover {
+    background-color: #312E81;
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+</style>
+</head>
+<body class="min-h-screen py-10 px-4 sm:px-6">
+
+  <div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-7 sm:p-10">
+
+      <p class="eyebrow mb-2">Student Profile · WorthyUps</p>
+      <h1 class="font-display text-2xl sm:text-3xl text-[#1E1B4B] mb-1">Create your profile</h1>
+      <p class="text-sm text-gray-500 mb-8">Fill in your details to generate your recruitment profile.</p>
+
+      <form id="studentForm" class="space-y-5">
+
+        <!-- Row 1: Full name / Email -->
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="full_name" class="block text-sm font-medium mb-1.5">Full name</label>
+            <input type="text" id="full_name" name="full_name" placeholder="John Doe" required
+              class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium mb-1.5">Email</label>
+            <input type="email" id="email" name="email" placeholder="john@example.com" required
+              class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+          </div>
+        </div>
+
+        <!-- Row 2: Gender / Major -->
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="gender" class="block text-sm font-medium mb-1.5">Gender</label>
+            <select id="gender" name="gender" required
+              class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm bg-white text-gray-700">
+              <option value="" disabled selected>Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="major" class="block text-sm font-medium mb-1.5">Major</label>
+            <input type="text" id="major" name="major" placeholder="Computer Science" required
+              class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+          </div>
+        </div>
+
+        <!-- Row 3: Graduation year / Roll number -->
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="grad_year" class="block text-sm font-medium mb-1.5">Graduation year</label>
+            <input type="number" id="grad_year" name="grad_year" placeholder="2027" min="1950" max="2100" required
+              class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+          </div>
+          <div>
+            <label for="roll_number" class="block text-sm font-medium mb-1.5">Roll number</label>
+            <input type="text" id="roll_number" name="roll_number" placeholder="Any number" required
+              class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+          </div>
+        </div>
+
+        <!-- Full width: Portfolio URL -->
+        <div>
+          <label for="portfolio" class="block text-sm font-medium mb-1.5">Portfolio URL</label>
+          <input type="url" id="portfolio" name="portfolio" placeholder="https://portfolio.com"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+        </div>
+
+        <!-- Full width: Skills -->
+        <div>
+          <label for="skills" class="block text-sm font-medium mb-1.5">Skills (comma separated)</label>
+          <input type="text" id="skills" name="skills" placeholder="JavaScript, React, Node.js"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+        </div>
+
+        <!-- Full width: Bio -->
+        <div>
+          <label for="bio" class="block text-sm font-medium mb-1.5">Bio</label>
+          <textarea id="bio" name="bio" rows="4" placeholder="Tell us a little about yourself"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm"></textarea>
+        </div>
+
+        <button type="submit"
+          class="btn-primary w-full text-white text-sm font-medium py-3 rounded-lg mt-2">
+          Create profile
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("studentForm").addEventListener("submit", function (event) {
+      // Prevent default form submission / page reload
+      event.preventDefault();
+
+      const form = event.target;
+
+      function getFieldValue(fieldKey) {
+        const byId = document.getElementById(fieldKey);
+        if (byId) return byId.value.trim();
+
+        const byName = form.elements[fieldKey];
+        if (byName) return byName.value.trim();
+
+        return "";
+      }
+
+      const skillsRaw = getFieldValue("skills");
+      const skillsArray = skillsRaw
+        .split(",")
+        .map(function (s) { return s.trim(); })
+        .filter(function (s) { return s.length > 0; });
+
+      const studentData = {
+        full_name: getFieldValue("full_name"),
+        email: getFieldValue("email"),
+        gender: getFieldValue("gender"),
+        major: getFieldValue("major"),
+        grad_year: getFieldValue("grad_year"),
+        roll_number: getFieldValue("roll_number"),
+        portfolio: getFieldValue("portfolio"),
+        skills: skillsArray,
+        skills_raw: skillsRaw,
+        bio: getFieldValue("bio"),
+      };
+
+      try {
+        const json = JSON.stringify(studentData);
+        localStorage.setItem("studentData", json);
+        localStorage.setItem("studentDashboard", json);
+        console.log("Saved student data:", studentData);
+
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        console.error("Failed to save student data:", error);
+      }
+    });
+  </script>
+
+</body>
+</html>

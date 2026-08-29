@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WorthyUps Recruiter Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  body {
+    background-color: #F4F6F8;
+    background-image: radial-gradient(circle at 1px 1px, rgba(27,42,65,0.06) 1px, transparent 0);
+    background-size: 22px 22px;
+    font-family: 'Inter', sans-serif;
+    color: #2B2F36;
+  }
+  .font-display { font-family: 'Fraunces', serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+  .eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6B7280;
+  }
+
+  input, select, textarea {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #4338CA;
+    box-shadow: 0 0 0 3px rgba(67,56,202,0.12);
+  }
+
+  .card-shadow {
+    box-shadow: 0 1px 2px rgba(27,42,65,0.04), 0 8px 24px -12px rgba(27,42,65,0.18);
+  }
+
+  .btn-primary {
+    background-color: #1E1B4B;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+  .btn-primary:hover { background-color: #312E81; }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .btn-ghost {
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+  .btn-ghost:hover { background-color: #F3F4F6; }
+  .btn-ghost:active { transform: scale(0.98); }
+
+  .shortlist-btn.is-shortlisted {
+    background-color: #ECFDF5;
+    border-color: #34D399;
+    color: #047857;
+  }
+
+  .reject-btn.is-rejected {
+    background-color: #FEF2F2;
+    border-color: #F87171;
+    color: #B91C1C;
+  }
+
+  .feedback-tag {
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .feedback-tag.is-selected {
+    background-color: #EEF2FF;
+    border-color: #4338CA;
+    color: #3730A3;
+  }
+
+  #feedbackModalOverlay {
+    transition: opacity 0.15s ease;
+  }
+  #feedbackModalOverlay.hidden-modal {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #feedbackModal {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  #feedbackModalOverlay.hidden-modal #feedbackModal {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+
+  .candidate-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .candidate-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .demo-badge {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+  }
+
+  #toast {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  #toast.hidden-toast {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+</style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6">
+
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-8">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <h1 class="font-display text-2xl sm:text-3xl text-[#1E1B4B]">WorthyUps</h1>
+          <span class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full border border-indigo-100">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Talent Discovery
+          </span>
+        </div>
+        <p class="text-sm text-gray-500">Recruiter Portal — browse and shortlist student candidates.</p>
+      </div>
+
+      <a href="index.html"
+         class="btn-ghost inline-flex items-center gap-2 text-sm font-medium text-[#1E1B4B] border border-gray-300 rounded-lg px-4 py-2.5 bg-white">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+        Switch to student view
+      </a>
+    </div>
+
+    <!-- Search / Filter bar -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-5 mb-6">
+      <div class="grid sm:grid-cols-[1fr_220px] gap-3">
+        <div class="relative">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search by name or skill"
+            class="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-gray-300 text-sm" />
+        </div>
+        <select id="majorFilter" class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm bg-white text-gray-700">
+          <option value="">All majors</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Candidate grid -->
+    <div id="candidateGrid" class="grid sm:grid-cols-2 gap-5"></div>
+
+    <p id="emptyResults" class="hidden text-center text-sm text-gray-500 py-10">
+      No candidates match your search.
+    </p>
+
+  </div>
+
+  <!-- Reject Feedback Modal -->
+  <div id="feedbackModalOverlay" class="hidden-modal fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+    <div id="feedbackModal" class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
+      <p class="text-xs uppercase tracking-wider text-gray-400 font-medium mb-1">Reject candidate</p>
+      <h2 id="feedbackModalName" class="font-semibold text-[#1E1B4B] text-lg mb-4">—</h2>
+
+      <p class="text-sm text-gray-500 mb-3">Select a reason (AI-suggested tags):</p>
+      <div id="feedbackTagList" class="flex flex-wrap gap-2 mb-5">
+        <button type="button" data-tag="Missing framework experience" class="feedback-tag text-xs font-medium border border-gray-300 rounded-full px-3 py-1.5">Missing framework experience</button>
+        <button type="button" data-tag="Need cloud/Docker skills" class="feedback-tag text-xs font-medium border border-gray-300 rounded-full px-3 py-1.5">Need cloud/Docker skills</button>
+        <button type="button" data-tag="Experience mismatch" class="feedback-tag text-xs font-medium border border-gray-300 rounded-full px-3 py-1.5">Experience mismatch</button>
+        <button type="button" data-tag="Insufficient portfolio" class="feedback-tag text-xs font-medium border border-gray-300 rounded-full px-3 py-1.5">Insufficient portfolio</button>
+        <button type="button" data-tag="Poor culture fit" class="feedback-tag text-xs font-medium border border-gray-300 rounded-full px-3 py-1.5">Poor culture fit</button>
+      </div>
+
+      <div class="mb-5">
+        <label for="customFeedbackInput" class="block text-sm font-medium text-gray-700 mb-1.5">Additional / customized feedback (optional)</label>
+        <textarea id="customFeedbackInput" rows="3" placeholder="Add any specific details for this candidate..."
+          class="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 text-sm"></textarea>
+      </div>
+
+      <div class="flex gap-2">
+        <button type="button" id="feedbackCancelBtn" class="btn-ghost flex-1 text-sm font-medium border border-gray-300 rounded-lg py-2.5">Cancel</button>
+        <button type="button" id="feedbackSubmitBtn" class="btn-primary flex-1 text-sm font-medium text-white rounded-lg py-2.5">Confirm rejection</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden-toast fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#1E1B4B] text-white text-sm font-medium px-5 py-3 rounded-lg shadow-lg z-50">
+    Candidate shortlisted
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEYS = ["studentData", "studentDashboard"];
+
+      function pick(obj, keys, fallback) {
+        for (const key of keys) {
+          if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+            return obj[key];
+          }
+        }
+        return fallback;
+      }
+
+      function getStoredCandidate() {
+        for (const key of STORAGE_KEYS) {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            try {
+              const parsed = JSON.parse(raw);
+              return parsed.data || parsed.body || parsed.student || parsed;
+            } catch (e) {
+              console.error("Failed to parse '" + key + "':", e);
+            }
+          }
+        }
+        return null;
+      }
+
+      function normalizeCandidate(raw, isDemo) {
+        return {
+          id: pick(raw, ["id"], "cand-" + Math.random().toString(36).slice(2, 9)),
+          full_name: pick(raw, ["full_name", "name", "student_name"], "Unnamed Candidate"),
+          major: pick(raw, ["major", "course", "department", "grad_year_major"], "Undeclared"),
+          email: pick(raw, ["email", "student_email"], "No email provided"),
+          phone: pick(raw, ["phone", "phone_number"], "Not provided"),
+          roll_number: pick(raw, ["roll_number", "rollNumber"], "N/A"),
+          bio: pick(raw, ["bio"], ""),
+          isDemo: !!isDemo,
+        };
+      }
+
+      const DEMO_CANDIDATES = [
+        {
+          full_name: "Ava Chen",
+          major: "Computer Science",
+          email: "ava.chen@example.com",
+          phone: "+1 555-0142",
+          roll_number: "CS2027-014",
+          bio: "Full-stack developer with a focus on React and distributed systems.",
+        },
+        {
+          full_name: "Marcus Reed",
+          major: "Data Science",
+          email: "marcus.reed@example.com",
+          phone: "+1 555-0198",
+          roll_number: "DS2026-088",
+          bio: "Machine learning enthusiast, built forecasting models for a campus startup.",
+        },
+        {
+          full_name: "Priya Nair",
+          major: "Electrical Engineering",
+          email: "priya.nair@example.com",
+          phone: "+1 555-0175",
+          roll_number: "EE2027-031",
+          bio: "Embedded systems and robotics, two published IEEE papers.",
+        },
+      ].map(function (c) { return normalizeCandidate(c, true); });
+
+      const realCandidateRaw = getStoredCandidate();
+      const candidates = realCandidateRaw
+        ? [normalizeCandidate(realCandidateRaw, false)].concat(DEMO_CANDIDATES)
+        : DEMO_CANDIDATES;
+
+      const SHORTLIST_KEY = "shortlistedCandidates";
+
+      // A candidate is identified by email when available, falling back to its generated id
+      function candidateKey(candidate) {
+        return candidate.email && candidate.email !== "No email provided"
+          ? candidate.email
+          : candidate.id;
+      }
+
+      function loadShortlistedKeys() {
+        try {
+          const raw = localStorage.getItem(SHORTLIST_KEY);
+          return raw ? new Set(JSON.parse(raw)) : new Set();
+        } catch (e) {
+          console.error("Failed to parse '" + SHORTLIST_KEY + "':", e);
+          return new Set();
+        }
+      }
+
+      function saveShortlistedKeys(keySet) {
+        localStorage.setItem(SHORTLIST_KEY, JSON.stringify(Array.from(keySet)));
+      }
+
+      // If the toggled candidate matches the current student's own profile,
+      // also write the shortlisted flag onto that stored student record.
+      function syncStudentRecordShortlistFlag(candidate, isShortlisted) {
+        if (candidate.isDemo) return;
+
+        STORAGE_KEYS.forEach(function (storageKey) {
+          const raw = localStorage.getItem(storageKey);
+          if (!raw) return;
+
+          try {
+            const parsed = JSON.parse(raw);
+            const container = parsed.data || parsed.body || parsed.student || parsed;
+            container.isShortlisted = isShortlisted;
+            localStorage.setItem(storageKey, JSON.stringify(parsed));
+          } catch (e) {
+            console.error("Failed to update shortlist flag on '" + storageKey + "':", e);
+          }
+        });
+      }
+
+      const shortlisted = loadShortlistedKeys();
+
+      // ---- Rejection feedback: persisted alongside application status ----
+      const FEEDBACK_KEY = "candidateFeedback";
+
+      function loadCandidateFeedback() {
+        try {
+          const raw = localStorage.getItem(FEEDBACK_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch (e) {
+          console.error("Failed to parse '" + FEEDBACK_KEY + "':", e);
+          return {};
+        }
+      }
+
+      function saveCandidateFeedback(feedbackMap) {
+        localStorage.setItem(FEEDBACK_KEY, JSON.stringify(feedbackMap));
+      }
+
+      const candidateFeedback = loadCandidateFeedback();
+
+      // If the rejected candidate matches the current student's own profile,
+      // write the application status + feedback reason directly onto that record
+      // so the student dashboard can read it.
+      function syncStudentRecordFeedback(candidate, status, reason) {
+        if (candidate.isDemo) return;
+
+        STORAGE_KEYS.forEach(function (storageKey) {
+          const raw = localStorage.getItem(storageKey);
+          if (!raw) return;
+
+          try {
+            const parsed = JSON.parse(raw);
+            const container = parsed.data || parsed.body || parsed.student || parsed;
+            container.applicationStatus = status;
+            container.feedbackReason = reason;
+            localStorage.setItem(storageKey, JSON.stringify(parsed));
+          } catch (e) {
+            console.error("Failed to sync feedback onto '" + storageKey + "':", e);
+          }
+        });
+      }
+
+      let activeFeedbackContext = null;
+      const selectedTags = new Set();
+
+      function openFeedbackModal(candidate, rejectBtn, reasonNote) {
+        selectedTags.clear();
+        document.querySelectorAll(".feedback-tag").forEach(function (tagBtn) {
+          tagBtn.classList.remove("is-selected");
+        });
+        document.getElementById("customFeedbackInput").value = "";
+
+        activeFeedbackContext = { candidate: candidate, rejectBtn: rejectBtn, reasonNote: reasonNote };
+        document.getElementById("feedbackModalName").textContent = candidate.full_name;
+        document.getElementById("feedbackModalOverlay").classList.remove("hidden-modal");
+      }
+
+      function closeFeedbackModal() {
+        document.getElementById("feedbackModalOverlay").classList.add("hidden-modal");
+        activeFeedbackContext = null;
+      }
+
+      document.querySelectorAll(".feedback-tag").forEach(function (tagBtn) {
+        tagBtn.addEventListener("click", function () {
+          const tag = tagBtn.dataset.tag;
+          if (selectedTags.has(tag)) {
+            selectedTags.delete(tag);
+            tagBtn.classList.remove("is-selected");
+          } else {
+            selectedTags.add(tag);
+            tagBtn.classList.add("is-selected");
+          }
+        });
+      });
+
+      document.getElementById("feedbackCancelBtn").addEventListener("click", closeFeedbackModal);
+
+      document.getElementById("feedbackSubmitBtn").addEventListener("click", function () {
+        if (!activeFeedbackContext) return;
+
+        const { candidate, rejectBtn, reasonNote } = activeFeedbackContext;
+        const customFeedback = document.getElementById("customFeedbackInput").value.trim();
+
+        const reasonParts = [];
+        if (selectedTags.size > 0) {
+          reasonParts.push(Array.from(selectedTags).join(", "));
+        }
+        if (customFeedback) {
+          reasonParts.push(customFeedback);
+        }
+
+        const reason = reasonParts.length > 0
+          ? reasonParts.join(" — ")
+          : "No specific reason provided";
+
+        const key = candidateKey(candidate);
+        candidateFeedback[key] = {
+          status: "rejected",
+          reason: reason,
+          selectedTags: Array.from(selectedTags),
+          customFeedback: customFeedback,
+        };
+        saveCandidateFeedback(candidateFeedback);
+        syncStudentRecordFeedback(candidate, "rejected", reason);
+
+        rejectBtn.classList.add("is-rejected");
+        rejectBtn.textContent = "Rejected ✕";
+        reasonNote.textContent = "Reason: " + reason;
+        reasonNote.classList.remove("hidden");
+
+        showToast(candidate.full_name + " rejected — feedback saved");
+        closeFeedbackModal();
+      });
+
+      function initials(name) {
+        return name
+          .split(" ")
+          .filter(Boolean)
+          .slice(0, 2)
+          .map(function (w) { return w[0].toUpperCase(); })
+          .join("");
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.remove("hidden-toast");
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(function () {
+          toast.classList.add("hidden-toast");
+        }, 2200);
+      }
+
+      function toggleShortlist(candidate, btn) {
+        const key = candidateKey(candidate);
+        const isNowShortlisted = !shortlisted.has(key);
+
+        if (isNowShortlisted) {
+          shortlisted.add(key);
+          btn.classList.add("is-shortlisted");
+          btn.textContent = "Shortlisted ✓";
+          showToast("Candidate shortlisted successfully");
+        } else {
+          shortlisted.delete(key);
+          btn.classList.remove("is-shortlisted");
+          btn.textContent = "Shortlist candidate";
+          showToast(candidate.full_name + " removed from shortlist");
+        }
+
+        saveShortlistedKeys(shortlisted);
+        syncStudentRecordShortlistFlag(candidate, isNowShortlisted);
+      }
+
+      function renderCard(candidate) {
+        const card = document.createElement("div");
+        card.className = "candidate-card bg-white rounded-2xl card-shadow border border-gray-200 p-5 sm:p-6 relative";
+        card.dataset.name = candidate.full_name.toLowerCase();
+        card.dataset.major = candidate.major.toLowerCase();
+        card.dataset.bio = (candidate.bio || "").toLowerCase();
+
+        card.innerHTML =
+          (candidate.isDemo
+            ? '<span class="demo-badge absolute top-4 right-4 uppercase font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Demo</span>'
+            : '<span class="demo-badge absolute top-4 right-4 uppercase font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Live profile</span>') +
+          '<div class="flex items-center gap-3 mb-4">' +
+            '<div class="w-11 h-11 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-semibold text-sm font-mono">' +
+              initials(candidate.full_name) +
+            '</div>' +
+            '<div>' +
+              '<p class="font-semibold text-[#1E1B4B] leading-tight">' + candidate.full_name + '</p>' +
+              '<p class="text-xs text-gray-500">' + candidate.major + '</p>' +
+            '</div>' +
+          '</div>' +
+          (candidate.bio ? '<p class="text-sm text-gray-600 leading-relaxed mb-4">' + candidate.bio + '</p>' : '') +
+          '<div class="space-y-1.5 mb-5 text-sm">' +
+            '<div class="flex justify-between"><span class="text-gray-500">Email</span><span class="font-medium text-right">' + candidate.email + '</span></div>' +
+            '<div class="flex justify-between"><span class="text-gray-500">Phone</span><span class="font-medium text-right">' + candidate.phone + '</span></div>' +
+            '<div class="flex justify-between"><span class="text-gray-500">Roll number</span><span class="font-mono text-xs font-medium text-right">' + candidate.roll_number + '</span></div>' +
+          '</div>' +
+          '<div class="flex gap-2">' +
+            '<a href="mailto:' + candidate.email + '" class="btn-ghost flex-1 text-center text-xs font-medium border border-gray-300 rounded-lg py-2">Email</a>' +
+            '<a href="tel:' + candidate.phone + '" class="btn-ghost flex-1 text-center text-xs font-medium border border-gray-300 rounded-lg py-2">Call</a>' +
+          '</div>' +
+          '<button type="button" class="shortlist-btn w-full mt-3 text-sm font-medium border border-gray-300 rounded-lg py-2.5">Shortlist candidate</button>' +
+          '<button type="button" class="reject-btn w-full mt-2 text-sm font-medium border border-gray-300 rounded-lg py-2.5">Reject candidate</button>' +
+          '<p class="reject-reason-note hidden text-xs text-red-600 mt-2 leading-relaxed"></p>';
+
+        const shortlistBtn = card.querySelector(".shortlist-btn");
+        const rejectBtn = card.querySelector(".reject-btn");
+        const reasonNote = card.querySelector(".reject-reason-note");
+
+        // Restore persisted shortlist state on load
+        if (shortlisted.has(candidateKey(candidate))) {
+          shortlistBtn.classList.add("is-shortlisted");
+          shortlistBtn.textContent = "Shortlisted ✓";
+        }
+
+        // Restore persisted rejection + feedback reason state on load
+        const existingFeedback = candidateFeedback[candidateKey(candidate)];
+        if (existingFeedback && existingFeedback.status === "rejected") {
+          rejectBtn.classList.add("is-rejected");
+          rejectBtn.textContent = "Rejected ✕";
+          reasonNote.textContent = "Reason: " + existingFeedback.reason;
+          reasonNote.classList.remove("hidden");
+        }
+
+        shortlistBtn.addEventListener("click", function () {
+          toggleShortlist(candidate, shortlistBtn);
+        });
+
+        rejectBtn.addEventListener("click", function () {
+          openFeedbackModal(candidate, rejectBtn, reasonNote);
+        });
+
+        return card;
+      }
+
+      function populateMajorFilter() {
+        const majors = Array.from(new Set(candidates.map(function (c) { return c.major; }))).sort();
+        const select = document.getElementById("majorFilter");
+        majors.forEach(function (major) {
+          const opt = document.createElement("option");
+          opt.value = major.toLowerCase();
+          opt.textContent = major;
+          select.appendChild(opt);
+        });
+      }
+
+      function renderGrid() {
+        const grid = document.getElementById("candidateGrid");
+        grid.innerHTML = "";
+        candidates.forEach(function (candidate) {
+          grid.appendChild(renderCard(candidate));
+        });
+        applyFilters();
+      }
+
+      function applyFilters() {
+        const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        const major = document.getElementById("majorFilter").value;
+        const grid = document.getElementById("candidateGrid");
+        const cards = Array.from(grid.children);
+        let visibleCount = 0;
+
+        cards.forEach(function (card) {
+          const matchesQuery =
+            !query ||
+            card.dataset.name.includes(query) ||
+            card.dataset.bio.includes(query) ||
+            card.dataset.major.includes(query);
+          const matchesMajor = !major || card.dataset.major === major;
+
+          const visible = matchesQuery && matchesMajor;
+          card.style.display = visible ? "" : "none";
+          if (visible) visibleCount++;
+        });
+
+        document.getElementById("emptyResults").classList.toggle("hidden", visibleCount !== 0);
+      }
+
+      document.getElementById("searchInput").addEventListener("input", applyFilters);
+      document.getElementById("majorFilter").addEventListener("change", applyFilters);
+
+      populateMajorFilter();
+      renderGrid();
+    })();
+  </script>
+
+</body>
+</html>
