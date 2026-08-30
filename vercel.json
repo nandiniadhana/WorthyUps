@@ -1,12 +1,11 @@
-json 
 {
-  "builds": [
+  "builds":[
     {
       "src": "Backend/app.py",
       "use": "@vercel/python"
     }
   ],
-  "route": [
+  "routes": [
     {
       "src": "/(.*)",
       "dest": "Backend/app.py"
